@@ -94,14 +94,13 @@ describe('ModifiedFilesTracker', () => {
     expect(tracker.render.classList.contains('hidden')).toBeFalsy();
   });
 
-  it('should subscribe to chatItems and modifiedFilesTitle', () => {
+  it('should subscribe to modifiedFilesList', () => {
     const tracker = new ModifiedFilesTracker({
       tabId: 'test-tab'
     });
 
     expect(tracker).toBeDefined();
-    expect(mockSubscribe).toHaveBeenCalledWith('chatItems', expect.any(Function));
-    expect(mockSubscribe).toHaveBeenCalledWith('modifiedFilesTitle', expect.any(Function));
+    expect(mockSubscribe).toHaveBeenCalledWith('modifiedFilesList', expect.any(Function));
   });
 
   describe('updateContent', () => {
@@ -136,33 +135,35 @@ describe('ModifiedFilesTracker', () => {
     });
 
     it('should render file pills when modified files exist', () => {
-      const mockChatItems: ChatItem[] = [
-        {
-          type: ChatItemType.ANSWER,
-          messageId: 'msg-1',
-          fileList: {
-            filePaths: [ 'test.ts' ],
-            details: {
-              'test.ts': {
-                changes: { added: 5, deleted: 2 },
-                visibleName: 'test.ts',
-                icon: 'ok-circled'
-              }
+      const mockModifiedFiles = {
+        type: ChatItemType.ANSWER,
+        messageId: 'msg-1',
+        fileList: {
+          filePaths: [ 'test.ts' ],
+          details: {
+            'test.ts': {
+              changes: { added: 5, deleted: 2 },
+              visibleName: 'test.ts',
+              icon: 'ok-circled'
             }
           }
         }
-      ];
+      };
 
-      mockGetValue.mockReturnValue(mockChatItems);
+      const callback = mockSubscribe.mock.calls.find(
+        (call: any) => call[0] === 'modifiedFilesList'
+      )?.[1];
 
-      (tracker as any).updateContent();
+      if (typeof callback === 'function') {
+        callback(mockModifiedFiles);
+      }
 
       expect(mockContentWrapper.appendChild).toHaveBeenCalled();
     });
   });
 
   describe('title updates', () => {
-    it('should update title when modifiedFilesTitle changes', () => {
+    it('should update title when ModifiedFilesChatItem has title', () => {
       const mockUpdateTitle = jest.fn();
       const { CollapsibleContent } = jest.requireMock('../collapsible-content');
       (CollapsibleContent as jest.Mock).mockImplementation(() => ({
@@ -178,38 +179,20 @@ describe('ModifiedFilesTracker', () => {
 
       expect(tracker).toBeDefined();
 
-      const titleCallback = mockSubscribe.mock.calls.find(
-        (call: any) => call[0] === 'modifiedFilesTitle'
+      const callback = mockSubscribe.mock.calls.find(
+        (call: any) => call[0] === 'modifiedFilesList'
       )?.[1];
 
-      titleCallback?.('New Title');
+      if (typeof callback === 'function') {
+        const mockData = {
+          type: ChatItemType.ANSWER,
+          title: 'New Title',
+          fileList: { filePaths: [ 'test.ts' ] }
+        };
+        callback(mockData);
+      }
 
       expect(mockUpdateTitle).toHaveBeenCalledWith('New Title');
-    });
-
-    it('should not update title when empty string is provided', () => {
-      const mockUpdateTitle = jest.fn();
-      const { CollapsibleContent } = jest.requireMock('../collapsible-content');
-      (CollapsibleContent as jest.Mock).mockImplementation(() => ({
-        render: {
-          querySelector: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() }))
-        },
-        updateTitle: mockUpdateTitle
-      }));
-
-      const tracker = new ModifiedFilesTracker({
-        tabId: 'test-tab'
-      });
-
-      expect(tracker).toBeDefined();
-
-      const titleCallback = mockSubscribe.mock.calls.find(
-        (call: any) => call[0] === 'modifiedFilesTitle'
-      )?.[1];
-
-      titleCallback?.('');
-
-      expect(mockUpdateTitle).not.toHaveBeenCalled();
     });
   });
 

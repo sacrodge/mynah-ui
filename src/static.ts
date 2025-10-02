@@ -193,21 +193,9 @@ export interface MynahUIDataModel {
    */
   customContextCommand?: QuickActionCommand[];
   /**
-   * Title for the modified files tracker component
-   */
-  modifiedFilesTitle?: string;
-  /**
-   * Visibility state for the modified files tracker component
-   */
-  modifiedFilesVisible?: boolean;
-  /**
-   * Flag to indicate when a new conversation starts
-   */
-  newConversation?: boolean;
-  /**
    * Modified files data for the tracker component (push mechanism)
    */
-  modifiedFilesList?: ChatItemContent['fileList'];
+  modifiedFilesList?: ModifiedFilesChatItem | null;
 }
 
 export interface MynahUITabStoreTab {
@@ -522,6 +510,11 @@ export interface ChatItem extends ChatItemContent {
   shimmer?: boolean;
   collapse?: boolean;
   border?: boolean;
+}
+
+export interface ModifiedFilesChatItem extends ChatItem {
+  modifiedFilesTitle?: string;
+  modifiedFilesVisible?: boolean;
 }
 
 export interface ValidationPattern {

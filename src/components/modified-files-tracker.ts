@@ -6,12 +6,10 @@
 import { DomBuilder, ExtendedHTMLElement } from '../helper/dom';
 import { StyleLoader } from '../helper/style-loader';
 import { CollapsibleContent } from './collapsible-content';
-import { ChatItemContent, ChatItemButton, MynahEventNames } from '../static';
+import { ModifiedFilesChatItem } from '../static';
 import testIds from '../helper/test-ids';
 import { MynahUITabsStore } from '../helper/tabs-store';
-import { ChatItemTreeViewWrapper } from './chat-item/chat-item-tree-view-wrapper';
-import { ChatItemButtonsWrapper } from './chat-item/chat-item-buttons';
-import { MynahUIGlobalEvents } from '../helper/events';
+import { ChatItemTreeFile } from './chat-item/chat-item-tree-file';
 
 export interface ModifiedFilesTrackerProps {
   tabId: string;
@@ -48,27 +46,27 @@ export class ModifiedFilesTracker {
 
     const tabDataStore = MynahUITabsStore.getInstance().getTabDataStore(this.props.tabId);
 
-    tabDataStore.subscribe('modifiedFilesList', (fileList: ChatItemContent['fileList'] | null) => {
-      this.renderModifiedFiles(fileList);
+    tabDataStore.subscribe('modifiedFilesList', (modifiedFiles: ModifiedFilesChatItem | null) => {
+      this.renderModifiedFiles(modifiedFiles);
     });
 
-    tabDataStore.subscribe('modifiedFilesTitle', (newTitle: string) => {
-      if (newTitle !== '') {
-        this.collapsibleContent.updateTitle(newTitle);
-      }
-    });
-
-    this.renderModifiedFiles(tabDataStore.getValue('modifiedFilesList'));
+    const modifiedFiles = tabDataStore.getValue('modifiedFilesList');
+    this.renderModifiedFiles(modifiedFiles);
   }
 
-  private renderModifiedFiles (fileList: ChatItemContent['fileList'] | null): void {
+  private renderModifiedFiles (modifiedFiles: ModifiedFilesChatItem | null): void {
     const contentWrapper = this.collapsibleContent.render.querySelector('.mynah-collapsible-content-label-content-wrapper');
     if (contentWrapper == null) return;
 
+    // Update title if provided
+    if (modifiedFiles?.title != null && modifiedFiles.title !== '') {
+      this.collapsibleContent.updateTitle(modifiedFiles.title);
+    }
+
     contentWrapper.innerHTML = '';
 
-    if ((fileList?.filePaths?.length ?? 0) > 0 && fileList != null) {
-      this.renderFilePills(contentWrapper, fileList);
+    if ((modifiedFiles?.fileList?.filePaths?.length ?? 0) > 0 && modifiedFiles?.fileList != null) {
+      this.renderFilePills(contentWrapper, modifiedFiles);
     } else {
       this.renderEmptyState(contentWrapper);
     }
@@ -82,45 +80,29 @@ export class ModifiedFilesTracker {
     }));
   }
 
-  private renderFilePills (contentWrapper: Element, fileList: NonNullable<ChatItemContent['fileList']> & { messageId?: string }): void {
-    const messageId = fileList.messageId ?? `modified-files-tracker-${this.props.tabId}`;
+  private renderFilePills (contentWrapper: Element, modifiedFiles: ModifiedFilesChatItem): void {
+    const messageId = modifiedFiles.messageId ?? `modified-files-tracker-${this.props.tabId}`;
+    const fileList = modifiedFiles.fileList;
+    if (fileList == null) return;
 
-    // Render the file tree with actions and buttons as provided by the data
-    contentWrapper.appendChild(new ChatItemTreeViewWrapper({
-      tabId: this.props.tabId,
-      messageId,
-      files: fileList.filePaths ?? [],
-      cardTitle: '',
-      rootTitle: fileList.rootFolderTitle,
-      deletedFiles: fileList.deletedFiles ?? [],
-      flatList: fileList.flatList ?? true,
-      actions: (fileList as any).actions ?? {},
-      details: fileList.details ?? {},
-      hideFileCount: fileList.hideFileCount ?? true,
-      collapsed: fileList.collapsed ?? false,
-      referenceSuggestionLabel: '',
-      references: [],
-      onRootCollapsedStateChange: () => {}
-    }).render);
+    const filesContainer = DomBuilder.getInstance().build({
+      type: 'div',
+      classNames: [ 'mynah-modified-files-list' ],
+      children: (fileList.filePaths ?? []).map(filePath =>
+        new ChatItemTreeFile({
+          filePath,
+          fileName: filePath.split('/').pop() ?? filePath,
+          originalFilePath: filePath,
+          tabId: this.props.tabId,
+          messageId,
+          deleted: (fileList.deletedFiles ?? []).includes(filePath),
+          details: fileList.details?.[filePath],
+          actions: fileList.actions?.[filePath]
+        }).render
+      )
+    });
 
-    // Render buttons if they exist
-    const fileListWithButtons = fileList as ChatItemContent['fileList'] & { buttons?: ChatItemButton[] };
-    const buttons: ChatItemButton[] | undefined = fileListWithButtons.buttons;
-    if (Array.isArray(buttons) && buttons.length > 0) {
-      const buttonsWrapper = new ChatItemButtonsWrapper({
-        tabId: this.props.tabId,
-        buttons,
-        onActionClick: (action: ChatItemButton) => {
-          MynahUIGlobalEvents.getInstance().dispatch(MynahEventNames.BODY_ACTION_CLICKED, {
-            tabId: this.props.tabId,
-            messageId: (action as any).messageId != null ? (action as any).messageId : messageId,
-            actionId: action.id,
-            actionText: action.text
-          });
-        }
-      });
-      contentWrapper.appendChild(buttonsWrapper.render);
-    }
+    contentWrapper.appendChild(filesContainer);
   }
 
   public setVisible (visible: boolean): void {

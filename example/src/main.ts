@@ -1647,11 +1647,13 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     
                     // Make the component visible and set initial state
                     mynahUI.updateStore(tabId, { 
-                        modifiedFilesVisible: true,
-                        modifiedFilesTitle: 'Work in progress...',
                         modifiedFilesList: {
-                            filePaths: [],
-                            flatList: true
+                            type: ChatItemType.ANSWER,
+                            title: 'Work in progress...',
+                            fileList: {
+                                filePaths: [],
+                                flatList: true
+                            }
                         }
                     });
                     
@@ -1659,8 +1661,12 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     setTimeout(() => {
                         mynahUI.updateStore(tabId, {
                             modifiedFilesList: {
-                                filePaths: ['src/components/chat-wrapper.ts'],
-                                flatList: true
+                                type: ChatItemType.ANSWER,
+                                title: 'Work in progress...',
+                                fileList: {
+                                    filePaths: ['src/components/chat-wrapper.ts'],
+                                    flatList: true
+                                }
                             }
                         });
                     }, 1000);
@@ -1668,11 +1674,15 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     setTimeout(() => {
                         mynahUI.updateStore(tabId, {
                             modifiedFilesList: {
-                                filePaths: [
-                                    'src/components/chat-wrapper.ts',
-                                    'src/styles/components/_modified-files-tracker.scss'
-                                ],
-                                flatList: true
+                                type: ChatItemType.ANSWER,
+                                title: 'Work in progress...',
+                                fileList: {
+                                    filePaths: [
+                                        'src/components/chat-wrapper.ts',
+                                        'src/styles/components/_modified-files-tracker.scss'
+                                    ],
+                                    flatList: true
+                                }
                             }
                         });
                     }, 2000);
@@ -1680,12 +1690,16 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     setTimeout(() => {
                         mynahUI.updateStore(tabId, {
                             modifiedFilesList: {
-                                filePaths: [
-                                    'src/components/chat-wrapper.ts',
-                                    'src/styles/components/_modified-files-tracker.scss',
-                                    'src/main.ts'
-                                ],
-                                flatList: true
+                                type: ChatItemType.ANSWER,
+                                title: 'Work in progress...',
+                                fileList: {
+                                    filePaths: [
+                                        'src/components/chat-wrapper.ts',
+                                        'src/styles/components/_modified-files-tracker.scss',
+                                        'src/main.ts'
+                                    ],
+                                    flatList: true
+                                }
                             }
                         });
                     }, 3000);
@@ -1693,18 +1707,22 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     setTimeout(() => {
                         mynahUI.updateStore(tabId, {
                             modifiedFilesList: {
-                                filePaths: [
-                                    'src/components/chat-wrapper.ts',
-                                    'src/styles/components/_modified-files-tracker.scss',
-                                    'src/main.ts',
-                                    'example/src/main.ts'
-                                ],
-                                flatList: true,
-                                actions: {
-                                    'src/components/chat-wrapper.ts': [{ name: 'undo', icon: 'undo' }],
-                                    'src/styles/components/_modified-files-tracker.scss': [{ name: 'undo', icon: 'undo' }],
-                                    'src/main.ts': [{ name: 'undo', icon: 'undo' }],
-                                    'example/src/main.ts': [{ name: 'undo', icon: 'undo' }]
+                                type: ChatItemType.ANSWER,
+                                title: 'Work in progress...',
+                                fileList: {
+                                    filePaths: [
+                                        'src/components/chat-wrapper.ts',
+                                        'src/styles/components/_modified-files-tracker.scss',
+                                        'src/main.ts',
+                                        'example/src/main.ts'
+                                    ],
+                                    flatList: true,
+                                    actions: {
+                                        'src/components/chat-wrapper.ts': [{ name: 'undo', icon: 'undo' }],
+                                        'src/styles/components/_modified-files-tracker.scss': [{ name: 'undo', icon: 'undo' }],
+                                        'src/main.ts': [{ name: 'undo', icon: 'undo' }],
+                                        'example/src/main.ts': [{ name: 'undo', icon: 'undo' }]
+                                    }
                                 }
                             }
                         });
@@ -1712,20 +1730,23 @@ here to see if it gets cut off properly as expected, with an ellipsis through cs
                     
                     setTimeout(() => {
                         mynahUI.updateStore(tabId, {
-                            modifiedFilesTitle: 'Work done!',
                             modifiedFilesList: {
-                                filePaths: [
-                                    'src/components/chat-wrapper.ts',
-                                    'src/styles/components/_modified-files-tracker.scss',
-                                    'src/main.ts',
-                                    'example/src/main.ts'
-                                ],
-                                flatList: true,
-                                actions: {
-                                    'src/components/chat-wrapper.ts': [{ name: 'undo', icon: 'undo' }],
-                                    'src/styles/components/_modified-files-tracker.scss': [{ name: 'undo', icon: 'undo' }],
-                                    'src/main.ts': [{ name: 'undo', icon: 'undo' }],
-                                    'example/src/main.ts': [{ name: 'undo', icon: 'undo' }]
+                                type: ChatItemType.ANSWER,
+                                title: 'Work done!',
+                                fileList: {
+                                    filePaths: [
+                                        'src/components/chat-wrapper.ts',
+                                        'src/styles/components/_modified-files-tracker.scss',
+                                        'src/main.ts',
+                                        'example/src/main.ts'
+                                    ],
+                                    flatList: true,
+                                    actions: {
+                                        'src/components/chat-wrapper.ts': [{ name: 'undo', icon: 'undo' }],
+                                        'src/styles/components/_modified-files-tracker.scss': [{ name: 'undo', icon: 'undo' }],
+                                        'src/main.ts': [{ name: 'undo', icon: 'undo' }],
+                                        'example/src/main.ts': [{ name: 'undo', icon: 'undo' }]
+                                    }
                                 }
                             }
                         });

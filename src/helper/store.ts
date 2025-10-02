@@ -44,10 +44,7 @@ const emptyDataModelObject: Required<MynahUIDataModel> = {
   tabHeaderDetails: null,
   tabMetadata: {},
   customContextCommand: [],
-  modifiedFilesTitle: 'No files modified!',
-  modifiedFilesVisible: false,
   modifiedFilesList: null,
-  newConversation: false
 };
 const dataModelKeys = Object.keys(emptyDataModelObject);
 export class EmptyMynahUIDataModel {

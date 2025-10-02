@@ -16,7 +16,8 @@ import {
   TabHeaderDetails,
   MynahEventNames,
   QuickActionCommandGroup,
-  QuickActionCommand
+  QuickActionCommand,
+  ModifiedFilesChatItem
 } from '../../static';
 import { ChatItemCard } from './chat-item-card';
 import { ChatPromptInput } from './chat-prompt-input';
@@ -99,8 +100,8 @@ export class ChatWrapper {
       tabId: this.props.tabId,
       visible: false
     });
-    MynahUITabsStore.getInstance().addListenerToDataStore(this.props.tabId, 'modifiedFilesVisible', (visible: boolean) => {
-      this.modifiedFilesTracker.setVisible(visible);
+    MynahUITabsStore.getInstance().getTabDataStore(this.props.tabId).subscribe('modifiedFilesList', (modifiedFiles: ModifiedFilesChatItem | null) => {
+      this.modifiedFilesTracker.setVisible(modifiedFiles != null);
     });
 
     MynahUITabsStore.getInstance().addListenerToDataStore(this.props.tabId, 'chatItems', (chatItems: ChatItem[]) => {
