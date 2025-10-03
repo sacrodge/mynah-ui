@@ -58,6 +58,11 @@ export class ModifiedFilesTracker {
     const contentWrapper = this.collapsibleContent.render.querySelector('.mynah-collapsible-content-label-content-wrapper');
     if (contentWrapper == null) return;
 
+    // Make component visible first
+    if (modifiedFiles?.modifiedFilesVisible != null) {
+      this.setVisible(modifiedFiles?.modifiedFilesVisible);
+    }
+
     // Update title if provided
     if (modifiedFiles?.title != null && modifiedFiles.title !== '') {
       this.collapsibleContent.updateTitle(modifiedFiles.title);
