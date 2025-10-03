@@ -27,6 +27,37 @@
         font-style: italic;
         padding: var(--mynah-sizing-2) var(--mynah-card-radius-corner);
     }
+
+    .mynah-collapsible-content-label-title-wrapper {
+        align-items: center !important;
+    }
+
+    .mynah-collapsible-content-label-content-wrapper {
+        pointer-events: none !important;
+
+        * {
+            pointer-events: auto !important;
+        }
+    }
+
+    .mynah-modified-files-list {
+        .mynah-chat-item-tree-view-file-item {
+            border: none !important;
+            margin-bottom: var(--mynah-sizing-4) !important;
+            padding: var(--mynah-sizing-half) !important;
+            gap: 0 !important;
+
+            .mynah-chat-item-tree-view-file-item-title {
+                .mynah-ui-icon {
+                    margin-right: var(--mynah-sizing-2) !important;
+                }
+            }
+
+            .mynah-chat-item-tree-view-file-item-actions {
+                margin-left: var(--mynah-sizing-1) !important;
+            }
+        }
+    }
 }
 
 // Remove top border radius and padding from chat prompt when modified files tracker is visible
