@@ -517,6 +517,11 @@ export class ChatWrapper {
   };
 
   public updateChatAnswerWithMessageId = (messageId: string, updateWith: Partial<ChatItem>): void => {
+    // Check if the messageId contains 'modified-files-tracker' if so route to that component and return immediately
+    if (messageId.includes('modified-files-')) {
+      this.modifiedFilesTracker.updateChatItem(updateWith, messageId);
+      return;
+    }
     if (this.allRenderedChatItems[messageId]?.render !== undefined) {
       this.allRenderedChatItems[messageId].updateCardStack(updateWith);
 
